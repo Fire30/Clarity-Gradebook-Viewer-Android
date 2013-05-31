@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Clarity Gradebook Viewer</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">DOGS AND CATS</string>
+    <string name="title_activity_sherlock_action_bar">ActionBar</string>
+    <string name="about_main">Made by T.J. Corley. App is not affiliated with Pinnacle nor Loudoun County.\n\nSource code available at:\n -https://github.com/Fire30 \n\n Open Source Libraries Used: \n -ActionBarSherlock</string>
+    <string name="logo">logo1</string>
+    <string name="username"> Username</string>
+    <string name="password">Password</string>
+    <string name="autologin">Remember Login Details</string>
+    <string name="login">Login</string>
+    <string name="grades">Grades</string>
+    
+
+</resources>

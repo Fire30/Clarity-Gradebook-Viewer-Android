@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <!--main.xml-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+android:background="#FFFFFF"
+>   
+     <TextView android:id="@+id/tv_1"
+        android:text="@string/grades"
+        android:textColor="#000000"
+        android:gravity="center_vertical|center_horizontal"
+        android:textSize="26sp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:background="#ffffff"
+        android:layout_marginBottom="5dip"
+        android:typeface="sans"/>
+<RelativeLayout
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="#000000">
+
+    <TextView android:id="@+id/tv_2"
+        android:textColor="#FFFFFF"
+        android:gravity="center_vertical|left"
+        android:textSize="16sp"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:typeface="serif"
+        android:layout_width="200dip">
+    </TextView>
+ 
+</RelativeLayout>
+<ListView
+    android:id="@+id/list"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
+
+</ListView>
+ </LinearLayout>
