@@ -4,7 +4,7 @@ App I made for the Loudoun County App competition. May be fairly buggy as I had 
 
 Preqequisites
 =============
-[ActionBarSherlock](actionbarsherlock.com/‎)
+ActionBarSherlock- actionbarsherlock.com
 License
 ==============
 The MIT License (MIT)
