@@ -21,6 +21,7 @@ public class IndividualGradeTableActivity extends Activity {
 			TextView period = (TextView) findViewById(R.id.tv_2);
 			period.setText(extras.getString("quarterName"));
 			((TextView) findViewById(R.id.tv_1)).setText(extras.getString("className"));
+			System.out.println(extras.getString("className"));
 		} catch (Exception e) 
 		{
 			e.printStackTrace();

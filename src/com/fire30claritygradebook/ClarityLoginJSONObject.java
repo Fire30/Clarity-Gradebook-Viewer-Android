@@ -2,7 +2,6 @@
 package com.fire30claritygradebook;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,19 +10,19 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
-public class ClarityLoginJSONObject extends JSONObject{
+public class ClarityLoginJSONObject extends JSONArray{
 	private String school;
 	private String username;
 	private String password;
 	private int quarterIndex;
+	public static final String baseURL = "http://tcorley.me/clarity/grade?";
 	
 	public ClarityLoginJSONObject(String string) throws JSONException {
 		super(string);
 		//need to get declare quarter from beggining
 		try 
 		{
-			this.quarterIndex = getInt("Period");
+			this.quarterIndex = this.getJSONObject(2).getInt("quarter_index");
 		} 
 		catch (JSONException e) 
 		{
@@ -34,14 +33,13 @@ public class ClarityLoginJSONObject extends JSONObject{
 	{
 		try 
 		{
-			JSONArray classes = getJSONArray("GradeData");
-			String[] titles = new String[classes.length()];
+			JSONArray classes = this.getJSONObject(0).getJSONArray("classes");
+			String [] classTitleArray = new String[classes.length()];
 			for (int i = 0; i < classes.length(); i++)
 			{
-				JSONObject theClass = (JSONObject)classes.get(i);
-				titles[i] = theClass.keys().next().toString();
+				classTitleArray[i] = classes.getJSONObject(i).getString("class_name");
 			}
-			return titles;
+			return classTitleArray;
 		}
 		catch (JSONException e) 
 		{
@@ -50,7 +48,7 @@ public class ClarityLoginJSONObject extends JSONObject{
 	}
 	public String getQuarter() throws JSONException
 	{
-		return (String) getJSONArray("QuarterNames").get(getQuarterIndex());
+		return this.getJSONObject(1).getJSONArray("periods").getString(quarterIndex);
 	}
 	public int getQuarterIndex()
 	{
@@ -67,7 +65,7 @@ public class ClarityLoginJSONObject extends JSONObject{
 		JSONArray quarters;
 		try 
 		{
-			quarters = getJSONArray("QuarterNames");
+			quarters = this.getJSONObject(1).getJSONArray("periods");
 			String[] names = new String[quarters.length()];
 			for(int i = 0; i < quarters.length();i++)
 			{
@@ -80,17 +78,12 @@ public class ClarityLoginJSONObject extends JSONObject{
 			return new String[0];
 		}
 	}
-	public String getGrade(String className)
+	public String getGrade(int index)
 	{
-		JSONArray quarters = null;
 		try 
 		{
-			quarters = getJSONArray("GradeData");
-			JSONObject classes = (JSONObject)(quarters.get(Arrays.asList(getTitles()).indexOf(className)));
-			JSONArray classData = (JSONArray)classes.get(classes.names().get(0).toString());
-			JSONArray gradeData =  (JSONArray)classData.get(getQuarterIndex());
-			return gradeData.get(0).toString();
-			//Extremely Nasty, should have thought more about how to display JSON
+			JSONArray gradeList = this.getJSONObject(0).getJSONArray("classes").getJSONObject(index).getJSONArray("grade_values");
+			return gradeList.getString(quarterIndex);
 		} 
 		catch (JSONException e1) 
 		{
@@ -101,12 +94,12 @@ public class ClarityLoginJSONObject extends JSONObject{
 	{
 		try 
 		{
-			JSONArray quarters = getJSONArray("GradeData");
-			JSONObject classes = (JSONObject)(quarters.get(position));
-			JSONArray classData = (JSONArray)classes.get(classes.names().get(0).toString());
-			JSONArray gradeData =  (JSONArray)classData.get(getQuarterIndex());
+			JSONObject classes = this.getJSONObject(0).getJSONArray("classes").getJSONObject(position);
+			String enrollID = classes.getJSONArray("enroll_id").getString(0);
+			String termID = classes.getJSONArray("term_ids").getJSONArray(quarterIndex).getString(0);
 			
-			return gradeData.get(1).toString();
+			return baseURL + "enroll_id=" + enrollID + "&term_id=" + termID + 
+					"&student_id=" + getStudentID() + "&aspx=" + getASPXAUTH();
 			
 		} catch (Exception e) 
 		{
@@ -118,7 +111,18 @@ public class ClarityLoginJSONObject extends JSONObject{
 	{
 		try 
 		{
-			return getString("ASPXAUTH");
+			return this.getJSONObject(3).getJSONArray("credentials").getString(0);
+		} 
+		catch (JSONException e) 
+		{
+			return "error";
+		}
+	}
+	public String getStudentID()
+	{
+		try 
+		{
+			return this.getJSONObject(3).getJSONArray("credentials").getString(1);
 		} 
 		catch (JSONException e) 
 		{
@@ -128,12 +132,14 @@ public class ClarityLoginJSONObject extends JSONObject{
 	public List<? extends Map<String, ?>> getGradeMap() {
 		
 		ArrayList<HashMap<String, String>> myList = new ArrayList<HashMap<String, String>>();
+		int i = 0;
 		for(String title : getTitles())
 		{
 			HashMap<String, String> map = new HashMap<String,String>();
 			map.put("title",title);
-			map.put("grade", getGrade(title));
+			map.put("grade", getGrade(i));
 			myList.add(map);
+			i++;
 		}
 		return myList;
 	}

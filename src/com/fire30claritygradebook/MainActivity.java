@@ -3,9 +3,6 @@
 //App licensed under MIT
 
 package com.fire30claritygradebook;
-import java.util.ArrayList;
-import java.util.Collections;
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -13,10 +10,8 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -26,30 +21,15 @@ public class MainActivity extends SherlockActivity{
 
     private String username;
     private String password;
-    private String school;
     private boolean autoLogin;
-    private ArrayList<String> schoolNames;
-    private Spinner spinner;
+
 
 	//would make as Array, but I need to add 'select school'.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
-        schoolNames = new ArrayList<String>();
-        schoolNames.addAll(LoginConnection.schoolMap().keySet());
-        Collections.sort(schoolNames);
-        //I put it in alphabetically, but it comes out not. weird...
-        schoolNames.add(0,"Select School");
-        //sets up the school selector
-        spinner = (Spinner) findViewById(R.id.spinner1);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item,schoolNames);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
         setDefaultValues();
-        //Sets values if autologin is on
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -61,7 +41,6 @@ public class MainActivity extends SherlockActivity{
     	password = ((EditText) (findViewById(R.id.password))).getText().toString();
     	username = ((EditText) (findViewById(R.id.username))).getText().toString();
     	autoLogin = ((CheckBox) findViewById(R.id.autoLogin)).isChecked();
-    	school = ((Spinner) (findViewById(R.id.spinner1))).getSelectedItem().toString();
     	
     	// when we press the login button, get text from the buttons.
     	new LoginAsyncTask().execute();
@@ -79,14 +58,6 @@ public class MainActivity extends SherlockActivity{
         {
         	((EditText)(findViewById(R.id.password))).setText(preferences.getString("password", null),TextView.BufferType.EDITABLE);
         }
-        if(preferences.getString("school", null) != null)
-        {
-        	int index = schoolNames.indexOf(preferences.getString("school", null));
-        	if (index != -1)
-        	{
-        		spinner.setSelection(index);
-        	}
-        }
     }
     private class LoginAsyncTask extends AsyncTask<Void, Void, Void> {
     	//Could have used URL AsyncTask, I saw most examples using that.
@@ -95,7 +66,7 @@ public class MainActivity extends SherlockActivity{
     	private LoginConnection login;
 		@Override
 		protected Void doInBackground(Void... params) {
-			login = new LoginConnection(username,password,school);
+			login = new LoginConnection(username,password);
 			login.login();
 			return null;
 		}
@@ -118,7 +89,6 @@ public class MainActivity extends SherlockActivity{
             	{
             		editor.putString("username", username);
             		editor.putString("password", password);
-            		editor.putString("school", school);
             		//Lets us use these values across sessions
             	}
             	else
@@ -131,7 +101,6 @@ public class MainActivity extends SherlockActivity{
             	i.putExtra("theJson", login.getTheJson().toString());
             	i.putExtra("username",username);
             	i.putExtra("password", password);
-            	i.putExtra("school", school);
             	i.putExtra("quarterIndex", login.getTheJson().getQuarterIndex());
                 startActivity(i);
                 //If we are logged in go to next page.

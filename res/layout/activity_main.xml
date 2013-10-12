@@ -17,12 +17,12 @@
         android:textSize="25sp" />
     
     <ImageView
-        android:contentDescription="@string/logo"
         android:layout_width="match_parent"
         android:layout_height="154dp"
+        android:contentDescription="@string/logo"
         android:gravity="center_horizontal"
         android:padding="20dp"
-        android:src="@drawable/logo1" />
+        android:src="@drawable/ic_launcher" />
 
     <!-- layout for Username d-->
 
@@ -71,11 +71,6 @@
             android:layout_weight="1.0"
             android:inputType="textPassword" />
     </LinearLayout>
-
-    <Spinner
-        android:id="@+id/spinner1"
-        android:layout_width="match_parent"
-        android:layout_height="50dp" />
 
     <CheckBox
         android:id="@+id/autoLogin"

@@ -27,10 +27,9 @@ public class GradeTableActivity extends SherlockActivity {
 
     private ClarityLoginJSONObject theJson;
     private String clickedURL;
-    private int clickedPositon;
     private String username;
     private String password;
-    private String school;
+    private String clickedTitleName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +41,6 @@ public class GradeTableActivity extends SherlockActivity {
 			theJson.setQuarterIndex(i.getIntExtra("quarterIndex",-1));
 			username = i.getStringExtra("username");
 			password = i.getStringExtra("password");
-			school = i.getStringExtra("school");
 			TextView period = (TextView) findViewById(R.id.tv_2);
 			period.setText(theJson.getQuarter());
 			
@@ -58,9 +56,8 @@ public class GradeTableActivity extends SherlockActivity {
 		{
 		    @Override public void onItemClick(AdapterView<?> arg0, View arg1,int position, long arg3)
 		    { 
-		    	clickedPositon = position;
+		    	clickedTitleName = theJson.getTitles()[position];
 		        clickedURL = theJson.getSpecifiedUrl(position);
-		        System.out.println(clickedURL);
 		        if(!clickedURL.equals(""))
 		        	new GradeDataAsyncTask().execute();
 		        
@@ -78,7 +75,7 @@ public class GradeTableActivity extends SherlockActivity {
         subMenu.add("About");
         
         MenuItem subMenuItem = subMenu.getItem();
-        subMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        subMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -97,13 +94,11 @@ public class GradeTableActivity extends SherlockActivity {
     		        @Override
     		        public void onClick(DialogInterface d, int n) {
     		            theJson.setQuarterIndex(n);
-    		            System.out.println(theJson.getQuarterIndex());
     		            finish();
     		            Intent i = new Intent(GradeTableActivity.this, GradeTableActivity.class);
     	            	i.putExtra("theJson", theJson.toString());
     	            	i.putExtra("username",username);
     	            	i.putExtra("password", password);
-    	            	i.putExtra("school", school);
     	            	i.putExtra("quarterIndex", theJson.getQuarterIndex());
     	                startActivity(i);
     		        }
@@ -128,15 +123,15 @@ public class GradeTableActivity extends SherlockActivity {
     	private boolean error = false;
 		@Override
 		protected Void doInBackground(Void... params) {
-			GradeDataConnection con = new GradeDataConnection(clickedURL,theJson.getASPXAUTH());
+			GradeDataConnection con = new GradeDataConnection(clickedURL);
 			con.connect();
 			gradeJson = con.getTheJson();
 			if(gradeJson.getError())
 			{
-				LoginConnection login = new LoginConnection(theJson.getUsername(),theJson.getPassword(),theJson.getPassword());//need to refresh first;
+				LoginConnection login = new LoginConnection(theJson.getUsername(),theJson.getPassword());//need to refresh first;
 				login.login();
 				theJson = login.getTheJson();
-				con = new GradeDataConnection(clickedURL,theJson.getASPXAUTH());
+				con = new GradeDataConnection(clickedURL);
 				try
 				{
 					con.connect();
@@ -175,9 +170,9 @@ public class GradeTableActivity extends SherlockActivity {
 			Intent i = new Intent(GradeTableActivity.this, IndividualGradeTableActivity.class);
 			try
 			{
-				i.putExtra("gradeJson", gradeJson.toString());
 				i.putExtra("quarterName", theJson.getQuarter());
-				i.putExtra("className", theJson.getTitles()[clickedPositon]);
+				i.putExtra("className", clickedTitleName);
+				i.putExtra("gradeJson", gradeJson.toString());
 			}
 			catch(Exception e)
 			{
@@ -193,7 +188,7 @@ public class GradeTableActivity extends SherlockActivity {
     	private LoginConnection login;
 		@Override
 		protected Void doInBackground(Void... params) {
-			login = new LoginConnection(username,password,school);
+			login = new LoginConnection(username,password);
 			login.login();
 			return null;
 		}
@@ -215,7 +210,6 @@ public class GradeTableActivity extends SherlockActivity {
             	i.putExtra("theJson", login.getTheJson().toString());
             	i.putExtra("username",username);
             	i.putExtra("password", password);
-            	i.putExtra("school", school);
             	i.putExtra("quarterIndex", theJson.getQuarterIndex());
                 startActivity(i);
                 //If we are logged in go to next page.

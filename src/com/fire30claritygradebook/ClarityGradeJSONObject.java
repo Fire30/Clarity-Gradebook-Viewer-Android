@@ -2,7 +2,6 @@
 package com.fire30claritygradebook;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +19,7 @@ public class ClarityGradeJSONObject extends JSONArray {
 	{
 		try
 		{
-			return getJSONObject(1).getBoolean("error");
+			return !getJSONArray(0).getJSONObject(0).has("assignment_name");
 		}
 		catch(Exception e)
 		{
@@ -34,23 +33,24 @@ public class ClarityGradeJSONObject extends JSONArray {
 	public List<? extends Map<String, ?>> getGradeMap() {
 		
 		ArrayList<HashMap<String, String>> myList = new ArrayList<HashMap<String, String>>();
+		int i = 0;
 		for(String title : getTitles())
 		{
 			HashMap<String, String> map = new HashMap<String,String>();
 			map.put("title",title);
-			map.put("grade", getGrade(Arrays.asList(getTitles()).indexOf(title)));
+			map.put("grade", getGrade(i));
 			myList.add(map);
+			i++;
 		}
 		return myList;
 	}
 	public String[] getTitles()
 	{
 		try {
-			JSONArray array = getJSONObject(0).getJSONArray("grades");
-			String[] grades = new String[array.length()];
-			for(int i = 0; i < array.length();i++)
+			String[] grades = new String[this.length()];
+			for(int i = 0; i < this.length();i++)
 			{
-				grades[i] = array.getJSONArray(i).getString(0);
+				grades[i] = getJSONArray(i).getJSONObject(0).getString("assignment_name");
 			}
 			return grades;
 		} catch (JSONException e) {
@@ -62,8 +62,7 @@ public class ClarityGradeJSONObject extends JSONArray {
 	{
 		try
 		{
-			JSONArray array = getJSONObject(0).getJSONArray("grades");
-			return array.getJSONArray(position).getString(1);
+			return  getJSONArray(position).getJSONObject(1).getString("score");
 		}
 		catch(Exception e)
 		{
