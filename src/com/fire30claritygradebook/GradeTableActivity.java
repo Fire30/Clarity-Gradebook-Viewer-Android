@@ -123,27 +123,30 @@ public class GradeTableActivity extends SherlockActivity {
     	private boolean error = false;
 		@Override
 		protected Void doInBackground(Void... params) {
-			GradeDataConnection con = new GradeDataConnection(clickedURL);
-			con.connect();
-			gradeJson = con.getTheJson();
-			if(gradeJson.getError())
+			GradeDataConnection con;
+			try
 			{
-				LoginConnection login = new LoginConnection(theJson.getUsername(),theJson.getPassword());//need to refresh first;
-				login.login();
-				theJson = login.getTheJson();
 				con = new GradeDataConnection(clickedURL);
+				con.connect();
+				gradeJson = con.getTheJson();
+			}
+			catch(Exception e)
+			{
 				try
 				{
+					LoginConnection login = new LoginConnection(username,password);//need to refresh first;
+					login.login();
+					theJson = login.getTheJson();
+					con = new GradeDataConnection(clickedURL);
 					con.connect();
 					gradeJson = con.getTheJson();
 				}
-				catch(Exception e)
+				catch(Exception d)
 				{
 					error = true;
 				}
-				
 			}
-			return null;
+			return null; 
 		}
 		@Override
 		protected void onPreExecute()
